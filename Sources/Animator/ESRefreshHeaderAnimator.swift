@@ -44,10 +44,14 @@ open class ESRefreshHeaderAnimator: UIView, ESRefreshProtocol, ESRefreshAnimator
     open var trigger: CGFloat = 60.0
     open var executeIncremental: CGFloat = 60.0
     open var state: ESRefreshViewState = .pullToRefresh
+    public static var titleFont: UIFont = UIFont.systemFont(ofSize: 14.0)
 
     fileprivate let imageView: UIImageView = {
         let imageView = UIImageView.init()
-        if /* Carthage */ let bundle = Bundle.init(identifier: "com.eggswift.ESPullToRefresh") {
+        let frameworkBundle = Bundle(for: ESRefreshAnimator.self)
+        if /* CocoaPods static */ let path = frameworkBundle.path(forResource: "ESPullToRefresh", ofType: "bundle"),let bundle = Bundle(path: path) {
+            imageView.image = UIImage(named: "icon_pull_to_refresh_arrow", in: bundle, compatibleWith: nil)
+        }else if /* Carthage */ let bundle = Bundle.init(identifier: "com.eggswift.ESPullToRefresh") {
             imageView.image = UIImage(named: "icon_pull_to_refresh_arrow", in: bundle, compatibleWith: nil)
         } else if /* CocoaPods */ let bundle = Bundle.init(identifier: "org.cocoapods.ESPullToRefresh") {
             imageView.image = UIImage(named: "ESPullToRefresh.bundle/icon_pull_to_refresh_arrow", in: bundle, compatibleWith: nil)
@@ -59,14 +63,14 @@ open class ESRefreshHeaderAnimator: UIView, ESRefreshProtocol, ESRefreshAnimator
     
     fileprivate let titleLabel: UILabel = {
         let label = UILabel.init(frame: CGRect.zero)
-        label.font = UIFont.systemFont(ofSize: 14.0)
+        label.font = ESRefreshHeaderAnimator.titleFont
         label.textColor = UIColor.init(white: 0.625, alpha: 1.0)
         label.textAlignment = .left
         return label
     }()
     
     fileprivate let indicatorView: UIActivityIndicatorView = {
-        let indicatorView = UIActivityIndicatorView.init(activityIndicatorStyle: .gray)
+        let indicatorView = UIActivityIndicatorView.init(style: .gray)
         indicatorView.isHidden = true
         return indicatorView
     }()
@@ -119,7 +123,7 @@ open class ESRefreshHeaderAnimator: UIView, ESRefreshProtocol, ESRefreshAnimator
             titleLabel.text = releaseToRefreshDescription
             self.setNeedsLayout()
             self.impact()
-            UIView.animate(withDuration: 0.2, delay: 0.0, options: UIViewAnimationOptions(), animations: {
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: UIView.AnimationOptions(), animations: {
                 [weak self] in
                 self?.imageView.transform = CGAffineTransform(rotationAngle: 0.000001 - CGFloat.pi)
             }) { (animated) in }
@@ -127,7 +131,7 @@ open class ESRefreshHeaderAnimator: UIView, ESRefreshProtocol, ESRefreshAnimator
         case .pullToRefresh:
             titleLabel.text = pullToRefreshDescription
             self.setNeedsLayout()
-            UIView.animate(withDuration: 0.2, delay: 0.0, options: UIViewAnimationOptions(), animations: {
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: UIView.AnimationOptions(), animations: {
                 [weak self] in
                 self?.imageView.transform = CGAffineTransform.identity
             }) { (animated) in }
